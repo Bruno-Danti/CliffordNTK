@@ -11,6 +11,7 @@ mnist_train = MNIST("./data",
                     download= True)
 
 n_qubits = 10
+n_qubits_cut = 8
 
 @njit(inline='always')
 def popcount(x):
@@ -106,9 +107,12 @@ def img_to_vec(image: torch.Tensor):
 
 img = get_image(0, mnist_train, n_qubits)
 vec = img_to_vec(img)
-vec_indices = np.where(vec > 0.97)[0]
+vec_cut = vec[:2**n_qubits_cut]
+vec_indices = np.where(vec > 0.0)[0]
+vec_indices_cut = np.where(vec_cut > 0.0)[0]
 vec_amps = vec[vec_indices]
-print(len(vec_indices))
+print(len(vec_indices), len(vec_indices_cut))
+print(len(vec_cut))
 
 delta = 1
 z_mask = 1
@@ -121,13 +125,19 @@ pauli_expectation_2(vec_indices, vec,
                   delta, z_mask, y_mask, n_qubits)
 
 start_time = timer()
-pauli_expectation(vec_indices, vec_amps,
+for _ in range(1): pauli_expectation(vec_indices, vec_amps,
                   delta, z_mask, y_mask, n_qubits)
 end_time = timer()
 print(end_time - start_time)
 
 start_time = timer()
-pauli_expectation_2(vec_indices, vec,
+for _ in range(1000): pauli_expectation_2(vec_indices, vec,
+                  delta, z_mask, y_mask, n_qubits)
+end_time = timer()
+print(end_time - start_time)
+
+start_time = timer()
+for _ in range(1000): pauli_expectation_2(vec_indices_cut, vec_cut,
                   delta, z_mask, y_mask, n_qubits)
 end_time = timer()
 print(end_time - start_time)
