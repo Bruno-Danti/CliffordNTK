@@ -1,3 +1,5 @@
+"""pauli_expval_on_real.py"""
+
 from numba import njit
 
 @njit(inline='always')
