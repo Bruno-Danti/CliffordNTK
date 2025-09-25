@@ -10,9 +10,14 @@ qnn = clifford_ntk.clifford_circuits.ConvolutionalQNN(n_q, n_l, thetas)
 
 evolved_paulis = clifford_ntk.pauli_evolve.EvolvedPaulis(op, qnn)
 
+clifford_ntk.utils.write_evolved_paulis(evolved_paulis, "evolved_paulis")
+
+
 single_pauli = evolved_paulis.plus_ops["0"][0]
 
 print(single_pauli)
+print(clifford_ntk.utils.get_z_x_masks(single_pauli), single_pauli._count_y(),
+      single_pauli.phase)
 
 
 
