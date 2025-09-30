@@ -55,9 +55,11 @@ from timeit import default_timer as timer
 start_time = timer()
 
 for i in range(len(dataset_matrix)):
-    dataset_matrix[i,:] = img_to_vec(
+    vec = img_to_vec(
         get_image(i, mnist_train, n_qubits)
     )
+    dataset_matrix[i,:] = vec / np.sqrt(np.sum(vec ** 2))
+    #print(np.sum(dataset_matrix[i, :]**2))
 
 write_dataset(dataset_matrix, path)
 
