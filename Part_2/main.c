@@ -111,7 +111,7 @@ inline float fast_kernel(
 
 
 int main() {
-    const int n_images = 6000;
+    const int n_images = 60000;
     const int n_qubits = 10;
     const int vector_length = 1024;
     const int n_trainable_gates = 252;
@@ -150,7 +150,31 @@ int main() {
 
     clock_t t1 = clock();
     printf("Elapsed: %f s\n", (float)(t1 - t0) / CLOCKS_PER_SEC);
+
+
+    FILE *fp = fopen("G_matrix.csv", "w");
+    if (fp == NULL) {
+        perror("Failed to open file");
+        return 1;
+    }
+
+    for (int i = 0; i < n_images; i++)
+    {
+        for (int j = 0; j < n_trainable_gates; j++)
+        {
+            if (j < n_trainable_gates - 1)
+                fprintf(fp, "%f,", G[i][j]);
+            else
+                fprintf(fp, "%f", G[i][j]);
+        }
+        fprintf(fp, "\n");        
+    }
     
+    fclose(fp);
+    
+    clock_t t2 = clock();
+    printf("Time to print G_matrix.csv = %f s\n",
+            (float)(t2 - t1) / CLOCKS_PER_SEC);
 
 
     free(dataset);
