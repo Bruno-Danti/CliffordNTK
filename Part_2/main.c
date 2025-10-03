@@ -23,14 +23,24 @@ void read_data(
 
     for (size_t i = 0; i < n_images; i++) {
         uint32_t n;
-        fread(&n, sizeof(uint32_t), 1, f);
+        if (fread(&n, sizeof(uint32_t), 1, f) != 1)
+        {
+            perror("fread failed");
+        }
+        
+        ;
         n_indices[i] = n;
 
         indices[i] = malloc(n * sizeof(uint16_t));
         float *values = malloc(n * sizeof(float));
 
-        fread(indices[i], sizeof(uint16_t), n, f);
-        fread(values, sizeof(float), n, f);
+        if (fread(indices[i], sizeof(uint16_t), n, f) != n) {
+            perror("fread failed");
+        }
+
+        if(fread(values, sizeof(float), n, f) != n) {
+            perror("fread failed");
+        }
 
         for (size_t j = 0; j < n; j++) {
             dataset[i][indices[i][j]] = values[j];
@@ -54,13 +64,23 @@ void read_paulis(
     if (!f) { perror("open"); exit(1); }
 
     int n_qubits_read;
-    fread(&n_qubits_read, sizeof(uint32_t), 1, f);
+    if (fread(&n_qubits_read, sizeof(uint32_t), 1, f) != 1)
+    {
+        perror("fread failed");
+    }
+    
 
     for (size_t gate = 0; gate < n_trainable_gates; gate++) {
         for (size_t sign = 0; sign < 2; sign++) {
             for (size_t qubit = 0; qubit < n_qubits; qubit++) {
-                fread(&(paulis[gate][sign][qubit]),
-                        sizeof(PauliTerm), 1, f);
+                if (
+                    fread(&(paulis[gate][sign][qubit]),
+                        sizeof(PauliTerm), 1, f)
+                        != 1
+                )
+                {
+                    perror("fread failed");
+                }
             }
         }
     }
@@ -110,11 +130,11 @@ inline float fast_kernel(
 }
 
 
-int main() {
-    const int n_images = 60000;
-    const int n_qubits = 10;
-    const int vector_length = 1024;
-    const int n_trainable_gates = 252;
+int main(int argc, char* argv[]) {
+    const int n_images = atoi(argv[1]);
+    const int n_qubits = atoi(argv[2]);
+    const int vector_length = atoi(argv[3]);
+    const int n_trainable_gates = atoi(argv[4]);
 
     float (*dataset)[vector_length] = calloc(n_images, sizeof *dataset);
     uint32_t *n_indices = malloc(n_images * sizeof(uint32_t));
@@ -122,10 +142,10 @@ int main() {
     PauliTerm (*paulis)[2][n_qubits] = malloc(n_trainable_gates * sizeof *paulis);
 
     read_data(
-        "../encoded_dataset", vector_length, n_images,
+        argv[5], vector_length, n_images,
         dataset, n_indices, indices
     );
-    read_paulis("../evolved_paulis", n_qubits, n_trainable_gates, paulis);
+    read_paulis(argv[6], n_qubits, n_trainable_gates, paulis);
     
     
 
@@ -152,7 +172,7 @@ int main() {
     printf("Elapsed: %f s\n", (float)(t1 - t0) / CLOCKS_PER_SEC);
 
 
-    FILE *fp = fopen("G_matrix.csv", "w");
+    FILE *fp = fopen(argv[7], "w");
     if (fp == NULL) {
         perror("Failed to open file");
         return 1;
