@@ -15,5 +15,6 @@ op = sum_Z(n_q)
 qnn = ConvolutionalQNN(n_q, n_l, thetas)
 evolved_paulis = EvolvedPaulis(op, qnn)
 write_evolved_paulis(evolved_paulis, sys.argv[1])
+
 with open("out/thetas.csv", "a") as f:
     np.savetxt(f, thetas.reshape(1,-1), delimiter=',')
