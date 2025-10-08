@@ -172,25 +172,25 @@ int main(int argc, char* argv[]) {
     // printf("Elapsed: %f s\n", (float)(t1 - t0) / CLOCKS_PER_SEC);
 
 
-    FILE *fp = fopen(argv[7], "w");
-    if (fp == NULL) {
-        perror("Failed to open file");
-        return 1;
-    }
+    // FILE *fp = fopen(argv[7], "w");
+    // if (fp == NULL) {
+    //     perror("Failed to open file");
+    //     return 1;
+    // }
 
     for (int i = 0; i < n_images; i++)
     {
         for (int j = 0; j < n_trainable_gates; j++)
         {
             if (j < n_trainable_gates - 1)
-                fprintf(fp, "%f,", G[i][j]);
+                printf("%f,", G[i][j]);
             else
-                fprintf(fp, "%f", G[i][j]);
+                printf("%f", G[i][j]);
         }
-        fprintf(fp, "\n");        
+        printf("\n");        
     }
     
-    fclose(fp);
+    // fclose(fp);
     
     // clock_t t2 = clock();
     // printf("Time to print G_matrix.csv = %f s\n",

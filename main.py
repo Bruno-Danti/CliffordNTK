@@ -11,19 +11,21 @@ from tqdm import tqdm
 
 from Part_1.main import main as part1
 
-def part2(n_images, n_qubits, n_trainable_gates,
-          input_path: str) -> np.ndarray:
-    subprocess.run(
-        ["Part_2/a.out", str(n_images),
-         str(n_qubits), str(2 ** n_qubits), str(n_trainable_gates),
-        #  "encode_dataset/encoded_dataset.bin",
-         input_path,
-         "out/tmp_evolved_paulis.bin",
-         "out/tmp_G.csv"]
-    )
-    G: np.ndarray = np.loadtxt(
-        "out/tmp_G.csv", float, delimiter=',', max_rows=n_images)
-    return G
+# def part2(n_images, n_qubits, n_trainable_gates,
+#           input_path: str) -> np.ndarray:
+#     subprocess.run(
+#         ["Part_2/a.out", str(n_images),
+#          str(n_qubits), str(2 ** n_qubits), str(n_trainable_gates),
+#         #  "encode_dataset/encoded_dataset.bin",
+#          input_path,
+#          "out/tmp_evolved_paulis.bin",
+#          "out/tmp_G.csv"]
+#     )
+#     G: np.ndarray = np.loadtxt(
+#         "out/tmp_G.csv", float, delimiter=',', max_rows=n_images)
+#     return G
+
+from Part_2.main import main as part2
 
 
 def part3(G: np.ndarray) -> np.ndarray:
@@ -56,10 +58,12 @@ for _ in tqdm(range(n_samples)):
     # print(f"Time for part 1: {t1 - t0}")
     
     G = part2(n_images, n_qubits, n_trainable_gates,
-          "encode_dataset/encoded_dataset.bin")
+          "encode_dataset/encoded_dataset.bin",
+          "out/tmp_paulis.bin")
 
     G_test = part2(n_images_test, n_qubits, n_trainable_gates,
-                   "encode_dataset/encoded_dataset_test.bin")
+                   "encode_dataset/encoded_dataset_test.bin",
+                   "out/tmp_paulis.bin")
     
     # t0 = timer()
     K_acc += part3(G)
