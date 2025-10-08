@@ -3,11 +3,13 @@ from scipy.linalg.blas import dsyrk
 from timeit import default_timer as timer
 from tqdm import tqdm
 
-def part1():
-    subprocess.run(
-        ["python3", "Part_1/main.py", "out/tmp_evolved_paulis.bin"],
-        check=True
-    )
+# def part1():
+#     subprocess.run(
+#         ["python3", "Part_1/main.py", "out/tmp_evolved_paulis.bin"],
+#         check=True
+#     )
+
+from Part_1.main import main as part1
 
 def part2(n_images, n_qubits, n_trainable_gates,
           input_path: str) -> np.ndarray:
@@ -35,10 +37,11 @@ def part3_test(G: np.ndarray, G_test: np.ndarray) -> np.ndarray:
 
 #t_start = timer()
 
-n_samples = 100
+n_samples = 10
 n_images = 10000
 n_images_test = 157
 n_qubits = 10
+n_layers = 3
 n_trainable_gates = 252
 
 K_acc = np.zeros((n_images, n_images))
@@ -47,7 +50,7 @@ for _ in tqdm(range(n_samples)):
 
     
     # t0 = timer()
-    part1()
+    part1(n_qubits, n_layers)
     # t1 = timer()
 
     # print(f"Time for part 1: {t1 - t0}")
