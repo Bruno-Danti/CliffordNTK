@@ -5,7 +5,7 @@ from clifford_ntk import (
     EvolvedPaulis,
     write_evolved_paulis
 )
-import sys
+import sys, numpy as np
 
 n_q = 10
 n_l = 3
@@ -15,3 +15,5 @@ op = sum_Z(n_q)
 qnn = ConvolutionalQNN(n_q, n_l, thetas)
 evolved_paulis = EvolvedPaulis(op, qnn)
 write_evolved_paulis(evolved_paulis, sys.argv[1])
+with open("out/thetas.csv", "a") as f:
+    np.savetxt(f, thetas.reshape(1,-1), delimiter=',')

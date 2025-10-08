@@ -151,7 +151,7 @@ int main(int argc, char* argv[]) {
 
     float (*G)[n_trainable_gates] = calloc(n_images, sizeof *G);
 
-    clock_t t0 = clock();
+    // clock_t t0 = clock();
 
     for (size_t i = 0; i < n_images; i++) {
         uint16_t *idx_i = indices[i];
@@ -168,8 +168,8 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    clock_t t1 = clock();
-    printf("Elapsed: %f s\n", (float)(t1 - t0) / CLOCKS_PER_SEC);
+    // clock_t t1 = clock();
+    // printf("Elapsed: %f s\n", (float)(t1 - t0) / CLOCKS_PER_SEC);
 
 
     FILE *fp = fopen(argv[7], "w");
@@ -192,9 +192,9 @@ int main(int argc, char* argv[]) {
     
     fclose(fp);
     
-    clock_t t2 = clock();
-    printf("Time to print G_matrix.csv = %f s\n",
-            (float)(t2 - t1) / CLOCKS_PER_SEC);
+    // clock_t t2 = clock();
+    // printf("Time to print G_matrix.csv = %f s\n",
+            // (float)(t2 - t1) / CLOCKS_PER_SEC);
 
 
     free(dataset);
