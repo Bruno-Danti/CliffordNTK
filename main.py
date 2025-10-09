@@ -47,7 +47,7 @@ for _ in tqdm(range(n_samples)):
         tmp_pauli_path
     )
     G_test = gradient_matrix(
-        n_images, n_qubits, n_trainable_gates,
+        n_images_test, n_qubits, n_trainable_gates,
         "./data/download/test.bin",
         tmp_pauli_path
     )
@@ -58,5 +58,5 @@ for _ in tqdm(range(n_samples)):
 K_train_train_acc /= n_samples
 K_test_train_acc /= n_samples
 
-np.savetxt("data/out/K_train_train.csv", K_train_train_acc, delimiter= ",")
-np.savetxt("data/out/K_test_train.csv", K_test_train_acc, delimiter= ",")
+np.savetxt("./data/out/K_train_train.csv", K_train_train_acc, delimiter= ",")
+np.savetxt("./data/out/K_test_train.csv", K_test_train_acc, delimiter= ",")
