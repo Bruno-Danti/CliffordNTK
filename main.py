@@ -26,7 +26,7 @@ def evolve_paulis(n_qubits: int,
     write_evolved_paulis(out, out_pauli_path)
 
 
-n_samples = 10
+n_samples = 350
 n_images = 10000
 n_images_test = 1013
 n_qubits = 10
