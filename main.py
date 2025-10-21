@@ -1,5 +1,6 @@
 import numpy as np
 from tqdm import tqdm
+from timeit import default_timer as timer
 
 from lib.clifford_pauli_evolve import(
     ConvolutionalQNN,
@@ -26,9 +27,9 @@ def evolve_paulis(n_qubits: int,
     write_evolved_paulis(out, out_pauli_path)
 
 
-n_samples = 350
-n_images = 10000
-n_images_test = 1013
+n_samples = 1
+n_images = 20010
+n_images_test = 10000
 n_qubits = 10
 n_layers = 3
 n_trainable_gates = 252
@@ -37,6 +38,7 @@ K_train_train_acc = np.zeros((n_images, n_images))
 K_test_train_acc = np.zeros((n_images_test, n_images))
 
 tmp_pauli_path = "./data/tmp/paulis.bin"
+print("Computing the NTK matrices for various sampled thetas:")
 for _ in tqdm(range(n_samples)):
     evolve_paulis(n_qubits,
                   n_layers,
@@ -62,5 +64,16 @@ K_train_train_acc = symmetrize(K_train_train_acc)
 
 K_test_train_acc /= n_samples
 
-np.savetxt("./data/out/K_train_train.csv", K_train_train_acc, delimiter= ",")
-np.savetxt("./data/out/K_test_train.csv", K_test_train_acc, delimiter= ",")
+train_train_out_path = "./data/out/K_train_train.csv"
+print(f"Saving the K_train_train to {train_train_out_path}...")
+t0 = timer()
+np.savetxt(train_train_out_path, K_train_train_acc, delimiter= ",")
+t1 = timer()
+print(f"Done. Elapsed = {t1-t0}s.")
+
+test_train_out_path = "./data/out/K_test_train.csv"
+print(f"Saving the K_test_train to {test_train_out_path}...")
+t0 = timer()
+np.savetxt(test_train_out_path, K_test_train_acc, delimiter= ",")
+t1 = timer()
+print(f"Done. Elapsed = {t1-t0}s.")

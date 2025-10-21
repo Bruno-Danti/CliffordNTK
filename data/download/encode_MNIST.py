@@ -54,21 +54,23 @@ mnist_test = MNIST(".",
 n_qubits: int = 10
 path = "encoded_train"
 
-def main(dataset: MNIST, path: str, n_qubits: int):
+def main(dataset: MNIST, path: str, n_qubits: int, dataset_name: str = ""):
     dataset_matrix = np.zeros((len(dataset), 2**n_qubits))
+    print(f"Encoding {dataset_name}:")
     for i in tqdm(range(len(dataset_matrix))):
         vec = img_to_vec(
             get_image(i, dataset, n_qubits)
         )
         dataset_matrix[i,:] = vec / np.sqrt(np.sum(vec ** 2))
+    print(f"Printing {dataset_name}:")
     write_dataset(dataset_matrix, path)
 
 
 
 start_time = timer()
 
-main(mnist_train, "./train.bin", n_qubits)
-main(mnist_test, "./test.bin", n_qubits)
+main(mnist_train, "./train.bin", n_qubits, "train set")
+main(mnist_test, "./test.bin", n_qubits, "test set")
 
 
 end_time = timer()
