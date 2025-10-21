@@ -56,6 +56,10 @@ for _ in tqdm(range(n_samples)):
     K_test_train_acc += other_kernel(G_test, G_train)
 
 K_train_train_acc /= n_samples
+def symmetrize(mat: np.ndarray) -> np.ndarray:
+    return mat + np.triu(mat, 1).T
+K_train_train_acc = symmetrize(K_train_train_acc)
+
 K_test_train_acc /= n_samples
 
 np.savetxt("./data/out/K_train_train.csv", K_train_train_acc, delimiter= ",")
