@@ -34,11 +34,17 @@ n_qubits = 10
 n_layers = 3
 n_trainable_gates = 252
 
+tmp_pauli_path = "./data/tmp/paulis.bin"
+train_train_out_path = "./data/out/K_train_train.csv"
+test_train_out_path = "./data/out/K_test_train.csv"
+
+
 K_train_train_acc = np.zeros((n_images, n_images))
 K_test_train_acc = np.zeros((n_images_test, n_images))
 
-tmp_pauli_path = "./data/tmp/paulis.bin"
 print("Computing the NTK matrices for various sampled thetas:")
+
+
 for _ in tqdm(range(n_samples)):
     evolve_paulis(n_qubits,
                   n_layers,
@@ -64,14 +70,13 @@ K_train_train_acc = symmetrize(K_train_train_acc)
 
 K_test_train_acc /= n_samples
 
-train_train_out_path = "./data/out/K_train_train.csv"
 print(f"Saving the K_train_train to {train_train_out_path}...")
 t0 = timer()
 np.savetxt(train_train_out_path, K_train_train_acc, delimiter= ",")
 t1 = timer()
 print(f"Done. Elapsed = {t1-t0}s.")
 
-test_train_out_path = "./data/out/K_test_train.csv"
+
 print(f"Saving the K_test_train to {test_train_out_path}...")
 t0 = timer()
 np.savetxt(test_train_out_path, K_test_train_acc, delimiter= ",")
