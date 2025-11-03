@@ -54,7 +54,8 @@ def perform_experiment(
         K_tr_tr_path: str,  # Output path where the K_train_train matrix is saved
         K_ts_tr_path: str  # Output path where the K_test_train matrix is saved
 ) -> None:
-        
+    
+    PROFILE_TIME: bool = False
 
     K_train_train_acc = np.zeros((n_train_images, n_train_images))
     K_test_train_acc = np.zeros((n_test_images, n_train_images))
@@ -66,6 +67,8 @@ def perform_experiment(
         evolve_paulis(n_qubits,
                     n_layers,
                     pauli_path)
+        if PROFILE_TIME:
+            t0 = timer()
         G_train = gradient_matrix(
             n_train_images, n_qubits, n_trainable_gates,
             tr_set_path,
@@ -76,9 +79,17 @@ def perform_experiment(
             ts_set_path,
             pauli_path
         )
+        if PROFILE_TIME:
+            t1 = timer()
+            print(f"Time to compute G matrices: {t1 - t0}s.")
 
+        if PROFILE_TIME:
+            t0 = timer()
         K_train_train_acc += self_kernel(G_train)
         K_test_train_acc += other_kernel(G_test, G_train)
+        if PROFILE_TIME:
+            t1 = timer()
+            print(f"Time for linalg ops: {t1 - t0}s.")
 
     K_train_train_acc /= n_samples
     def symmetrize(mat: np.ndarray) -> np.ndarray:

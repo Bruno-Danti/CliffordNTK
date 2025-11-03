@@ -1,6 +1,6 @@
 from perform_experiment import perform_experiment
 
-n_train_images = 30_000
+n_train_images = 60_000
 n_test_images = 10_000
 run = lambda n_samples,\
              K_tr_tr_path,\
