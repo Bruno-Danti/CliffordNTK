@@ -1,6 +1,6 @@
 from perform_experiment import perform_experiment
 
-n_train_images = 60_000
+n_train_images = 30_000
 n_test_images = 10_000
 run = lambda n_samples,\
              K_tr_tr_path,\
@@ -15,8 +15,8 @@ run = lambda n_samples,\
             )
 
 
-for i in range(3):
-    n_samples = 32 * (2**i)
+for i in range(2):
+    n_samples = 1024 * (2**i)
     run(n_samples,
         f"./data/out/K_train_train_{n_samples}_samples_{n_train_images}x{n_train_images}",
         f"./data/out/K_test_train_{n_samples}_samples_{n_test_images}x{n_train_images}")
