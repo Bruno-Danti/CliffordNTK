@@ -15,8 +15,8 @@ run = lambda n_samples,\
             )
 
 
-for i in range(2):
-    n_samples = 1024 * (2**i)
+for i in range(1):
+    n_samples = 25 * (2**i)
     run(n_samples,
         f"./data/out/K_train_train_{n_samples}_samples_{n_train_images}x{n_train_images}",
         f"./data/out/K_test_train_{n_samples}_samples_{n_test_images}x{n_train_images}")

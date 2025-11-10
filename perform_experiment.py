@@ -58,7 +58,7 @@ def perform_experiment(
     PROFILE_TIME: bool = False
 
     K_train_train_acc = np.zeros((n_train_images, n_train_images))
-    K_test_train_acc = np.zeros((n_test_images, n_train_images))
+    K_test_train_acc = np.zeros((n_train_images, n_test_images)) # The dimensions are swapped due to how dgemm works.
 
     print("Computing the NTK matrices for various sampled thetas:")
 
@@ -85,15 +85,22 @@ def perform_experiment(
 
         if PROFILE_TIME:
             t0 = timer()
-        K_train_train_acc += self_kernel(G_train)
-        K_test_train_acc += other_kernel(G_test, G_train)
+        #K_train_train_acc += self_kernel(G_train)
+        #K_test_train_acc += other_kernel(G_test, G_train)        
+
+        from scipy.linalg.blas import dsyrk, dgemm
+        dsyrk(alpha=1.0, a=G_train, c=K_train_train_acc.T, lower=False, beta=1.0, overwrite_c=True)
+        dgemm(alpha=1.0, a=G_test, b=G_train, c=K_test_train_acc.T, trans_b=True, beta=1.0, overwrite_c=True)
+
+
+
         if PROFILE_TIME:
             t1 = timer()
             print(f"Time for linalg ops: {t1 - t0}s.")
 
     K_train_train_acc /= n_samples
     def symmetrize(mat: np.ndarray) -> np.ndarray:
-        return mat + np.triu(mat, 1).T
+        return mat + np.tril(mat, -1).T
     K_train_train_acc = symmetrize(K_train_train_acc)
 
     K_test_train_acc /= n_samples
@@ -107,6 +114,6 @@ def perform_experiment(
 
     print(f"Saving the K_test_train to {K_ts_tr_path}...")
     t0 = timer()
-    np.save(K_ts_tr_path, K_test_train_acc)
+    np.save(K_ts_tr_path, K_test_train_acc.T)
     t1 = timer()
     print(f"Done. Elapsed = {t1-t0}s.")
