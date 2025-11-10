@@ -1,6 +1,7 @@
 import numpy as np
 from tqdm import tqdm
 from timeit import default_timer as timer
+import gc
 
 from lib.clifford_pauli_evolve import(
     ConvolutionalQNN,
@@ -98,6 +99,9 @@ def perform_experiment(
             t1 = timer()
             print(f"Time for linalg ops: {t1 - t0}s.")
 
+    del G_train, G_test
+    gc.collect()
+
     K_train_train_acc /= n_samples
     def symmetrize(mat: np.ndarray) -> np.ndarray:
         return mat + np.tril(mat, -1).T
@@ -105,15 +109,22 @@ def perform_experiment(
 
     K_test_train_acc /= n_samples
 
-    print(f"Saving the K_train_train to {K_tr_tr_path}...")
-    t0 = timer()
-    np.save(K_tr_tr_path, K_train_train_acc)
-    t1 = timer()
-    print(f"Done. Elapsed = {t1-t0}s.")
+    
 
 
     print(f"Saving the K_test_train to {K_ts_tr_path}...")
     t0 = timer()
     np.save(K_ts_tr_path, K_test_train_acc.T)
+    t1 = timer()
+    print(f"Done. Elapsed = {t1-t0}s.")
+
+    del K_test_train_acc
+    gc.collect()
+
+
+
+    print(f"Saving the K_train_train to {K_tr_tr_path}...")
+    t0 = timer()
+    np.save(K_tr_tr_path, K_train_train_acc)
     t1 = timer()
     print(f"Done. Elapsed = {t1-t0}s.")
