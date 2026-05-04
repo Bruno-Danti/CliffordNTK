@@ -56,7 +56,7 @@ def perform_experiment(
         K_ts_tr_path: str  # Output path where the K_test_train matrix is saved
 ) -> None:
     
-    PROFILE_TIME: bool = False
+    PROFILE_TIME: bool = True
 
     K_train_train_acc = np.zeros((n_train_images, n_train_images))
     K_test_train_acc = np.zeros((n_train_images, n_test_images)) # The dimensions are swapped due to how dgemm works.

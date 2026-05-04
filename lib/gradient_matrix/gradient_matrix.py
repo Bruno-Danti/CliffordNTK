@@ -10,7 +10,7 @@ def gradient_matrix(
         input_pauli_path: str
 ) -> np.ndarray:
     result = subprocess.run(
-        ["./lib/gradient_matrix/compiled_kernel",
+        ["./lib/gradient_matrix/compiled_kernel_new",
          str(n_images),
          str(n_qubits),
          str(2 ** n_qubits),
