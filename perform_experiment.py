@@ -58,8 +58,8 @@ def perform_experiment(
     
     PROFILE_TIME: bool = True
 
-    K_train_train_acc = np.zeros((n_train_images, n_train_images))
-    K_test_train_acc = np.zeros((n_train_images, n_test_images)) # The dimensions are swapped due to how dgemm works.
+    K_train_train_acc = np.zeros((n_train_images, n_train_images), dtype=np.float32)
+    K_test_train_acc = np.zeros((n_train_images, n_test_images), dtype=np.float32) # The dimensions are swapped due to how dgemm works.
 
     print("Computing the NTK matrices for various sampled thetas:")
 
@@ -82,16 +82,16 @@ def perform_experiment(
         )
         if PROFILE_TIME:
             t1 = timer()
-            print(f"Time to compute G matrices: {t1 - t0}s.")
+            print(f"\nTime to compute G matrices: {t1 - t0}s.")
 
         if PROFILE_TIME:
             t0 = timer()
         #K_train_train_acc += self_kernel(G_train)
         #K_test_train_acc += other_kernel(G_test, G_train)        
 
-        from scipy.linalg.blas import dsyrk, dgemm
-        dsyrk(alpha=1.0, a=G_train, c=K_train_train_acc.T, lower=False, beta=1.0, overwrite_c=True)
-        dgemm(alpha=1.0, a=G_test, b=G_train, c=K_test_train_acc.T, trans_b=True, beta=1.0, overwrite_c=True)
+        from scipy.linalg.blas import ssyrk, sgemm  # s for 32 bits and d for 64
+        ssyrk(alpha=1.0, a=G_train, c=K_train_train_acc.T, lower=False, beta=1.0, overwrite_c=True)
+        sgemm(alpha=1.0, a=G_test, b=G_train, c=K_test_train_acc.T, trans_b=True, beta=1.0, overwrite_c=True)
 
 
 
@@ -102,12 +102,30 @@ def perform_experiment(
     del G_train, G_test
     gc.collect()
 
-    K_train_train_acc /= n_samples
-    def symmetrize(mat: np.ndarray) -> np.ndarray:
-        return mat + np.tril(mat, -1).T
-    K_train_train_acc = symmetrize(K_train_train_acc)
+    K_train_train_acc /= np.float32(n_samples)
+    # def symmetrize(mat: np.ndarray) -> np.ndarray:
+    #     return mat + np.tril(mat, -1).T
 
-    K_test_train_acc /= n_samples
+    # This version requires less memory because it doesn't allocate memory for the returned variable
+    def symmetrize_inplace(mat: np.ndarray, block_size: int = 5000) -> np.ndarray:
+        n = mat.shape[0]
+        for i in range(0, n, block_size):
+            for j in range(i, n, block_size):
+                if i == j:
+                    # Blocks on diagonal
+                    block = mat[i:i+block_size, i:i+block_size]
+                    triu_idx = np.triu_indices(block.shape[0], k=1)
+                    block[triu_idx] = block.T[triu_idx]
+                else:
+                    # Off-diag blocks
+                    mat[i:i+block_size, j:j+block_size] = mat[j:j+block_size, i:i+block_size].T
+
+
+    # K_train_train_acc = symmetrize(K_train_train_acc)
+    print("Symmetrizing the K_train_train matrix...")
+    symmetrize_inplace(K_train_train_acc)
+
+    K_test_train_acc /= np.float32(n_samples)
 
     
 
